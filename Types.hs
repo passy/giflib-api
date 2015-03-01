@@ -2,14 +2,17 @@
 module Types where
 
 -- import Network.URI (URI)
-import Control.Monad (forM_)
 import Control.Applicative ((<$>), pure)
+import Control.Monad (forM_)
 import Control.Monad.Reader (ask)
 import Control.Monad.State (get, put)
 import Data.Acid (Query, Update, makeAcidic)
 import Data.Aeson.TH (deriveJSON, defaultOptions)
+import Data.Foldable (concat)
 import Data.SafeCopy (deriveSafeCopy, base)
 import Data.Typeable (Typeable)
+
+import Prelude hiding (concat)
 
 import qualified Data.Map as Map
 
@@ -33,9 +36,8 @@ deriveJSON defaultOptions ''Tag
 deriveJSON defaultOptions ''Link
 -- deriveJSON defaultOptions ''Links
 
--- TODO: join Maybe [] together
-getLinksByTag :: Tag -> Query Links (Maybe [Link])
-getLinksByTag tag = Map.lookup tag . getLinkMap <$> ask
+getLinksByTag :: Tag -> Query Links [Link]
+getLinksByTag tag = concat . Map.lookup tag . getLinkMap <$> ask
 
 postLink :: Link -> Update Links ()
 postLink link' = do
@@ -43,6 +45,5 @@ postLink link' = do
     forM_ (tags link') $ \t -> do
         let newLinks = maybe (pure link') (link' :) (Map.lookup t linkMap)
         put . Links $ Map.insert t newLinks linkMap
-
 
 makeAcidic ''Links ['getLinksByTag, 'postLink]
