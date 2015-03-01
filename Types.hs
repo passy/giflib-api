@@ -3,7 +3,7 @@ module Types where
 
 -- import Network.URI (URI)
 import Control.Monad (void)
-import Control.Applicative ((<$>))
+import Control.Applicative ((<$>), pure)
 import Control.Monad.Reader (ask)
 import Control.Monad.State (get, put)
 import Data.Acid (Query, Update, makeAcidic)
@@ -42,8 +42,8 @@ postLink link = do
     linkMap <- getLinkMap <$> get
     -- TODO: obvious
     let tag = head $ tags link
-    void $ case Map.lookup tag linkMap of
-             Just links -> put . Links $ (Map.insert tag (link : links) linkMap)
-             Nothing    -> put . Links $ (Map.insert tag [link] linkMap)
+    let newLinks = maybe (pure link) (link :) (Map.lookup tag linkMap)
 
-makeAcidic ''Links ['getLinksByTag]
+    void . put . Links $ Map.insert tag newLinks linkMap
+
+makeAcidic ''Links ['getLinksByTag, 'postLink]
