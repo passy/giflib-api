@@ -22,6 +22,7 @@ executable giflib-api
   build-depends:       base ==4.*
                      , text
                      , scotty
+                     , acid-state
   default-language:    Haskell2010
   Ghc-options:         -Wall
                        -fwarn-tabs
@@ -39,3 +40,4 @@ Test-Suite hspec-tests
                      , hspec
                      , QuickCheck
                      , scotty
+                     , acid-state
