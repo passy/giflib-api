@@ -41,9 +41,7 @@ getLinksByTag :: Tag -> Query Links [Link]
 getLinksByTag tag = concat . Map.lookup tag . getLinkMap <$> ask
 
 getLinks :: Query Links [Link]
-getLinks = do
-    l <- getLinkMap <$> ask
-    return . concat $ Map.elems l
+getLinks = concat . Map.elems . getLinkMap <$> ask
 
 postLink :: Link -> Update Links ()
 postLink link' = do
