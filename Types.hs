@@ -15,7 +15,7 @@ import qualified Data.Map as Map
 newtype Tag = Tag String
     deriving (Show, Typeable, Eq, Ord)
 
-data Link = Link { link :: String
+data Link = Link { link :: String -- TODO: Make this a URI (and find out how to seralize that)
                  , tags :: [Tag]
                  }
     deriving (Show, Typeable)
