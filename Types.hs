@@ -44,10 +44,9 @@ getLinks :: Query Links [Link]
 getLinks = concat . Map.elems . getLinkMap <$> ask
 
 postLink :: Link -> Update Links ()
-postLink link' = do
+postLink link' = forM_ (tags link') $ \t -> do
     linkMap <- getLinkMap <$> get
-    forM_ (tags link') $ \t -> do
-        let newLinks = maybe (pure link') (link' :) (Map.lookup t linkMap)
-        put . Links $ Map.insert t newLinks linkMap
+    let newLinks = maybe (pure link') (link' :) (Map.lookup t linkMap)
+    put . Links $ Map.insert t newLinks linkMap
 
 makeAcidic ''Links ['getLinksByTag, 'getLinks, 'postLink]
