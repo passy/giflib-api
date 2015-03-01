@@ -39,9 +39,7 @@ getLinksByTag tag = Map.lookup tag . getLinkMap <$> ask
 postLink :: Link -> Update Links ()
 postLink link' = do
     linkMap <- getLinkMap <$> get
-    -- TODO: obvious
-    let tag = head $ tags link'
-    let newLinks = maybe (pure link') (link' :) (Map.lookup tag linkMap)
+    let newLinks = tags link' >>= (\t -> maybe (pure link') (link' :) (Map.lookup t linkMap))
 
     put . Links $ Map.insert tag newLinks linkMap
 
