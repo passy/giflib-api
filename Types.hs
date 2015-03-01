@@ -27,6 +27,7 @@ data Link = Link { link :: String -- TODO: Make this a URI (and find out how to 
 -- Seems like a horrible hack, but let's make this work first
 -- before worrying about space/update efficiency.
 newtype Links = Links { getLinkMap :: Map.Map Tag [Link] }
+    deriving (Show, Typeable)
 
 deriveSafeCopy 0 'base ''Tag
 deriveSafeCopy 0 'base ''Link
@@ -39,6 +40,11 @@ deriveJSON defaultOptions ''Link
 getLinksByTag :: Tag -> Query Links [Link]
 getLinksByTag tag = concat . Map.lookup tag . getLinkMap <$> ask
 
+getLinks :: Query Links [Link]
+getLinks = do
+    l <- getLinkMap <$> ask
+    return . concat $ Map.elems l
+
 postLink :: Link -> Update Links ()
 postLink link' = do
     linkMap <- getLinkMap <$> get
@@ -46,4 +52,4 @@ postLink link' = do
         let newLinks = maybe (pure link') (link' :) (Map.lookup t linkMap)
         put . Links $ Map.insert t newLinks linkMap
 
-makeAcidic ''Links ['getLinksByTag, 'postLink]
+makeAcidic ''Links ['getLinksByTag, 'getLinks, 'postLink]
