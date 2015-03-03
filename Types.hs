@@ -4,7 +4,7 @@ module Types where
 
 import Network.URI (URI, URIAuth, parseURI)
 import Control.Applicative ((<$>), pure, (<*>))
-import Control.Monad (forM_, mzero)
+import Control.Monad (forM_, mzero, liftM)
 import Control.Monad.Reader (ask)
 import Control.Monad.State (get, put)
 import Data.Acid (Query, Update, makeAcidic)
@@ -35,7 +35,7 @@ newtype Links = Links { getLinkMap :: Map.Map Tag [Link] }
 instance FromJSON Link where
     parseJSON :: Value -> Parser Link
     parseJSON (Object o) =
-        Link <$> (o .: "link" <$> parseURI) <*> o .: "tags"
+        Link <$> fmap parseURI (o .: "link") <*> o .: "tags"
     parseJSON _ = mzero
 
 -- Orphan safecopy instances for URI-related things
