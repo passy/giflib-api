@@ -1,7 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import Types
-
+import Types (Links(Links)
+            , Tag(Tag)
+            , PostLink(PostLink)
+            , GetLinks(GetLinks)
+            , GetLinksByTag(GetLinksByTag))
 import Data.Acid (openLocalState, query, update)
 import Control.Monad.Trans (lift)
 import Control.Applicative ((<$>))
