@@ -3,11 +3,10 @@
 module Types where
 
 import Network.URI (URI, URIAuth, parseURI)
-import Control.Applicative ((<$>), pure, (<*>))
-import Control.Monad (forM_, mzero, liftM)
+import Control.Applicative ((<$>), pure)
+import Control.Monad (forM_, mzero)
 import Control.Monad.Reader (ask)
 import Control.Monad.State (get, put)
-import Control.Monad.Trans.Class (lift)
 import Data.Acid (Query, Update, makeAcidic)
 import Data.Aeson ((.:))
 import Data.Aeson.TH (deriveJSON, deriveToJSON, defaultOptions)
@@ -15,11 +14,9 @@ import Data.Aeson.Types (FromJSON(..), Parser, Value(..))
 import Data.Foldable (concat)
 import Data.SafeCopy (deriveSafeCopy, base)
 import Data.Typeable (Typeable)
-
 import Prelude hiding (concat)
 
 import qualified Data.Map as Map
-import Data.Maybe (isNothing, fromJust)
 
 newtype Tag = Tag String
     deriving (Show, Typeable, Eq, Ord)
@@ -38,14 +35,17 @@ instance FromJSON Link where
     parseJSON :: Value -> Parser Link
     parseJSON (Object o) = do
         linkStr <- o .: "link"
-        let link = parseURI linkStr
-        tags <- o .: "tags"
+        let link' = parseURI linkStr
+        tags' <- o .: "tags"
 
         -- Well, this works.
         -- Goes without saying there's a better way to do this.
         -- But with Haskell, the make it work first, then refactor rule works
         -- incredibly well thanks to the type system. So this is for next time.
-        if isNothing link then mzero else return $ Link (fromJust link) tags
+        case link' of
+             Just l -> return $ Link l tags'
+             Nothing -> mzero
+
     parseJSON _ = mzero
 
 -- Orphan safecopy instances for URI-related things
