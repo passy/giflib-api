@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
+import Types
 import Test.Hspec
 import Test.QuickCheck
 import Data.Aeson (decode)
