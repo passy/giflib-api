@@ -35,14 +35,11 @@ instance FromJSON Link where
     parseJSON :: Value -> Parser Link
     parseJSON (Object o) = do
         linkStr <- o .: "link"
-        let link' = parseURI linkStr
         tags' <- o .: "tags"
 
-        -- Well, this works.
-        -- Goes without saying there's a better way to do this.
-        -- But with Haskell, the make it work first, then refactor rule works
-        -- incredibly well thanks to the type system. So this is for next time.
-        case link' of
+        -- I wonder if there's a way to exploit that
+        -- both Parser and Maybe are MonadPlus or Monoid.
+        case parseURI linkStr of
              Just l -> return $ Link l tags'
              Nothing -> mzero
 
