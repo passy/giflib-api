@@ -24,7 +24,7 @@ newtype Tag = Tag String
 data Link = Link { link :: URI
                  , tags :: [Tag]
                  }
-    deriving (Show, Typeable)
+    deriving (Show, Typeable, Eq)
 
 -- Seems like a horrible hack, but let's make this work first
 -- before worrying about space/update efficiency.
