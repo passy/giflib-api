@@ -3,7 +3,7 @@
 module Types where
 
 import Network.URI (URI, URIAuth, parseURI)
-import Control.Applicative ((<$>), pure)
+import Control.Applicative ((<$>), pure, (<*>))
 import Control.Monad (forM_, mzero)
 import Control.Monad.Reader (ask)
 import Control.Monad.State (get, put)
@@ -33,16 +33,9 @@ newtype Links = Links { getLinkMap :: Map.Map Tag [Link] }
 
 instance FromJSON Link where
     parseJSON :: Value -> Parser Link
-    parseJSON (Object o) = do
-        linkStr <- o .: "link"
-        tags' <- o .: "tags"
-
-        -- I wonder if there's a way to exploit that
-        -- both Parser and Maybe are MonadPlus or Monoid.
-        case parseURI linkStr of
-             Just l -> return $ Link l tags'
-             Nothing -> mzero
-
+    parseJSON (Object o) = Link
+        <$> (maybe mzero return . parseURI =<< o .: "link")
+        <*> o .: "tags"
     parseJSON _ = mzero
 
 -- Orphan safecopy instances for URI-related things
