@@ -38,4 +38,7 @@ Transfer-Encoding: chunked
         ]
     }
 ]
+
+$ http localhost:3000/tags/hello
+...
 ```
