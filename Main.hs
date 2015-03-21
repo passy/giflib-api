@@ -5,9 +5,10 @@ import Types (Links(Links)
             , PostLink(PostLink)
             , GetLinks(GetLinks)
             , GetLinksByTag(GetLinksByTag))
-import Data.Acid (openLocalState, query, update)
-import Control.Monad.Trans (lift)
 import Control.Applicative ((<$>))
+import Control.Monad.Trans (lift)
+import Data.Acid (openLocalState, query, update)
+import Data.Time (getCurrentTime)
 import qualified Web.Scotty as S
 import qualified Data.Map as Map
 
@@ -20,7 +21,8 @@ main = do
             S.json links
         S.post "/" $ do
             link <- S.jsonData
-            lift $ update acid (PostLink link)
+            now <- lift getCurrentTime
+            lift $ update acid (PostLink now link)
         S.get "/tags/:tag" $ do
             tag <- Tag <$> S.param "tag"
             links <- lift $ query acid (GetLinksByTag tag)

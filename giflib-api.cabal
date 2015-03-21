@@ -28,6 +28,7 @@ executable giflib-api
                      , scotty
                      , text
                      , transformers
+                     , time
   default-language:    Haskell2010
   Ghc-options:         -Wall
                        -fwarn-tabs
@@ -53,3 +54,4 @@ Test-Suite hspec-tests
                      , scotty
                      , text
                      , transformers
+                     , time
