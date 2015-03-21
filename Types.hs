@@ -7,9 +7,9 @@ import Control.Monad (forM_, mzero)
 import Control.Monad.Reader (ask)
 import Control.Monad.State (get, put)
 import Data.Acid (Query, Update, makeAcidic)
-import Data.Aeson ((.:))
-import Data.Aeson.TH (deriveJSON, deriveToJSON, defaultOptions)
-import Data.Aeson.Types (FromJSON(..), Parser, Value(..))
+import Data.Aeson ((.:), (.=), object)
+import Data.Aeson.TH (deriveJSON, defaultOptions)
+import Data.Aeson.Types (FromJSON(..), ToJSON(..), Parser, Value(..))
 import Data.Foldable (concat)
 import Data.SafeCopy (deriveSafeCopy, base)
 import Data.Time (UTCTime)
@@ -44,13 +44,17 @@ instance FromJSON Link where
         <*> o .: "tags"
     parseJSON _ = mzero
 
+instance ToJSON Link where
+    toJSON (Link uri' tags') = object [ "uri"  .= show uri'
+                                      , "tags" .= tags' ]
+
 -- Orphan safecopy instances for URI-related things
 deriveSafeCopy 0 'base ''URI
 deriveSafeCopy 0 'base ''URIAuth
 
 deriveSafeCopy 0 'base ''Tag
-deriveSafeCopy 0 'base ''Link
 deriveSafeCopy 0 'base ''DateLink
+deriveSafeCopy 0 'base ''Link
 deriveSafeCopy 0 'base ''Links
 
 -- Orphan JSON instances for URI-related things
@@ -58,7 +62,6 @@ deriveJSON defaultOptions ''URI
 deriveJSON defaultOptions ''URIAuth
 deriveJSON defaultOptions ''Tag
 deriveJSON defaultOptions ''DateLink
-deriveToJSON defaultOptions ''Link
 
 getLinksByTag :: Tag -> Query Links [DateLink]
 getLinksByTag tag = concat . Map.lookup tag . getLinkMap <$> ask
