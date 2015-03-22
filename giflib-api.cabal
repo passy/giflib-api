@@ -19,6 +19,11 @@ executable giflib-api
   main-is:             Main.hs
   other-extensions:    OverloadedStrings
   build-depends:       base ==4.*
+                     -- Testing (while waiting for Halcyon to get the
+                     -- sandbox configure extras sorted out)
+                     , hspec
+                     , QuickCheck
+                     -- Prod
                      , acid-state
                      , aeson
                      , containers

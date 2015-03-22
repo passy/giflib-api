@@ -17,7 +17,7 @@ main = hspec $ do
         it "parses a valid link" $ do
             let json = "{\"link\": \"https://twitter.com/\", \"tags\": [\"foo\", \"bar\"]}"
             let obj = decode json :: Maybe Link
-            obj `shouldBe` Just Link {link = fromJust $ parseURI "https://twitter.com/", tags = [Tag "foo", Tag "bar"]}
+            obj `shouldBe` Just Link {uri = fromJust $ parseURI "https://twitter.com/", tags = [Tag "foo", Tag "bar"]}
         it "parses an invalid link" $ do
             let json = "{\"link\": \"!not/a/link\", \"tags\": [\"foo\", \"bar\"]}"
             let obj = decode json :: Maybe Link
